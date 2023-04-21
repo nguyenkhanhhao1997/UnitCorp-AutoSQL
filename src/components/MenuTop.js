@@ -6,7 +6,6 @@ import { AppBar, Toolbar, Typography, IconButton } from "@material-ui/core";
 import MenuItem from "@material-ui/core/MenuItem";
 import Menu from "@material-ui/core/Menu";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
-import { Redirect } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -63,17 +62,8 @@ const MenuTop = () => {
           Home
         </Link>
       </MenuItem>
-      <MenuItem onClick={handleMenuClose}>
-        <Link to="/login" className={classes.linkTo} onClick={btnLogout}>
-          logout
-        </Link>
-      </MenuItem>
     </Menu>
   );
-
-  if (logout) {
-    return <Redirect to={{ pathname: "/login" }} />;
-  }
 
   return (
     <div className={classes.root}>
@@ -81,7 +71,7 @@ const MenuTop = () => {
         <Toolbar>
           <Typography variant="h6" className={classes.title}>
             <Link to="/" className={classes.linkHome}>
-              Logix Technology
+              AutoSQL
             </Link>
           </Typography>
           <IconButton

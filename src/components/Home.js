@@ -1,16 +1,12 @@
-import React, { useEffect, useRef, useState } from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import { Redirect } from "react-router-dom";
-import callApi from "../api/apiService";
-import {
-  Card,
-  CardHeader,
-  CardMedia,
-  CardActions,
-  IconButton,
-} from "@material-ui/core";
-import { ThumbDown, ThumbUp } from "@material-ui/icons";
+import React, { useState } from "react";
+import { makeStyles } from "@material-ui/core";
+import { Grid, TextField, Button, Paper } from "@material-ui/core";
+import Handsontable from "handsontable";
+import { registerAllModules } from "handsontable/registry";
+import { HotTable } from "@handsontable/react";
+import "handsontable/dist/handsontable.full.min.css";
 
+registerAllModules();
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
@@ -19,145 +15,138 @@ const useStyles = makeStyles((theme) => ({
   card: {
     marginTop: "20px",
   },
+  txtInput: {
+    width: "98%",
+    margin: "1%",
+  },
+  paper: {
+    padding: theme.spacing(2),
+    margin: "auto",
+    maxWidth: 1000,
+  },
 }));
 
 const Home = () => {
   const classes = useStyles();
-  const [userId, setUserId] = useState(sessionStorage.getItem("userId"));
-  const [token, setToken] = useState(sessionStorage.getItem("token"));
-  const [login, setLogin] = useState(sessionStorage.getItem("login"));
-  const [movies, setMovies] = useState({});
-  const skipNum = useRef(0);
-  const isFullData = useRef(false);
 
-  useEffect(() => {
-    if (token !== null && userId !== null) {
-      loadMoreMovie();
-    }
-    window.addEventListener("scroll", handleScroll);
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
-
-  //load movies
-  const loadMoreMovie = () => {
-    let data = {
-      skip: skipNum.current,
-      userId: userId,
-    };
-    let headers = { Authorization: `Bearer ${token}` };
-    callApi(`home/getall`, "POST", data, headers).then((item) => {
-      setMovies((movies) => [...movies, ...item.data]);
-      if (item.data === null || item.data.length < 5) {
-        alert("There is nothing else to show!");
-        isFullData.current = true;
+  const [numberRow, setNumberRow] = useState(1);
+  const handleChangNumberOfRow = (event) => {
+    let number = event.target.value;
+    if (data.length > number) {
+      //slice list
+      let newData = data.slice(0, number);
+      setData(newData);
+    } else {
+      //append list
+      let newList = [...data];
+      for (var i = 0; i < number - data.length; i++) {
+        let newRecord = {
+          condition: "A=B",
+          codeA: "",
+          sheetNameA: "",
+          rowA: "",
+          columnA: "",
+          descriptionA: "",
+          codeB: "",
+          sheetNameB: "",
+          rowB: "",
+          columnB: "",
+          descriptionB: "",
+        };
+        newList.push(newRecord);
       }
-    });
+      setData(newList);
+    }
+    setNumberRow(number);
   };
 
-  // got more data when scrolled to the bottom
-  const handleScroll = (e) => {
-    if (isFullData.current === false) {
-      const scrollHeight = e.target.documentElement.scrollHeight;
-      const currentHeight = Math.ceil(
-        e.target.documentElement.scrollTop + window.innerHeight
-      );
-      if (currentHeight + 1 >= scrollHeight) {
-        skipNum.current = skipNum.current + 5;
-        loadMoreMovie();
-      }
-    }
-  };
-
-  const handleUserReact = (movieId, userReact, action) => {
-    // if action equals userReact, set action = 0 (None)
-    let act = 0;
-    if (userReact !== action) {
-      act = action;
-    }
-
-    // like or unlike
-    let isLike = 0; // do nothing
-    if (action === 1 && act === 1) {
-      isLike = 1; // like
-    } else if (action === 1 && act === 0) {
-      isLike = 2; //unlike
-    } else if (action === 2 && userReact === 1) {
-      isLike = 2; //unlike
-    }
-
-    let data = {
-      movieId: movieId,
-      userId: userId,
-      action: act,
-    };
-    let headers = { Authorization: `Bearer ${token}` };
-
-    callApi(`home/reactmovie`, "POST", data, headers).then((item) => {
-      if (item.data === "success") {
-        let newList = movies.map((item) => {
-          if (item.movieId === movieId) {
-            item.userReact = act;
-            if (isLike === 1) {
-              item.likeNumber = item.likeNumber + 1;
-            } else if (isLike === 2) {
-              item.likeNumber = item.likeNumber - 1;
-            }
-          }
-          return item;
-        });
-        setMovies(newList);
-      } else {
-        alert("Something went wrong");
-      }
-    });
-  };
-
-  if (login === null || login === "false") {
-    return <Redirect to={{ pathname: "/login" }} />;
-  }
+  const [data, setData] = useState([
+    {
+      condition: "A=B",
+      codeA: "",
+      sheetNameA: "",
+      rowA: "",
+      columnA: "",
+      descriptionA: "",
+      codeB: "",
+      sheetNameB: "",
+      rowB: "",
+      columnB: "",
+      descriptionB: "",
+    },
+  ]);
 
   return (
     <div className={classes.root}>
-      {movies.length > 0 &&
-        movies.map((movie) => {
-          return (
-            <Card
-              className={classes.card}
-              sx={{ maxWidth: 345 }}
-              key={movie.movieId}
-            >
-              <CardHeader title={movie.title} />
-              <CardMedia
-                component="iframe"
-                height="400"
-                image={movie.image}
-                alt="Movie Image"
+      <Grid container spacing={3}>
+        <Paper className={classes.paper}>
+          <Grid item xs={12} sm container>
+            <Grid item xs={6}>
+              <TextField
+                required
+                type="number"
+                label="Row"
+                variant="outlined"
+                value={numberRow}
+                className={classes.txtInput}
+                onChange={handleChangNumberOfRow}
+                size="small"
               />
-              <CardActions disableSpacing>
-                <h4>Like: {movie.likeNumber}</h4>
-                <IconButton
-                  onClick={() =>
-                    handleUserReact(movie.movieId, movie.userReact, 1)
-                  }
-                >
-                  {movie.userReact === 1 && <ThumbUp color="primary" />}
-                  {movie.userReact !== 1 && <ThumbUp />}
-                </IconButton>
-                <IconButton
-                  aria-label="share"
-                  onClick={() =>
-                    handleUserReact(movie.movieId, movie.userReact, 2)
-                  }
-                >
-                  {movie.userReact === 2 && <ThumbDown color="primary" />}
-                  {movie.userReact !== 2 && <ThumbDown />}
-                </IconButton>
-              </CardActions>
-            </Card>
-          );
-        })}
+            </Grid>
+            <Grid item xs={6}>
+              <Button
+                type="button"
+                fullWidth
+                variant="contained"
+                color="secondary"
+              >
+                Generate SQL
+              </Button>
+            </Grid>
+          </Grid>
+        </Paper>
+      </Grid>
+
+      <HotTable
+        data={data}
+        height="auto"
+        width="100%"
+        colWidths={100}
+        // colWidths={[100, 100, 100, 50, 50, 200, 100, 100, 50, 50, 200]}
+        stretchH="last"
+        colHeaders={[
+          "Condition",
+          "(A)Report code",
+          "(A)Sheet name",
+          "(A)Row",
+          "(A)Col",
+          "(A)Description",
+          "(B)Report code",
+          "(B)Sheet name",
+          "(B)Row",
+          "(B)Col",
+          "(B)Description",
+        ]}
+        columns={[
+          {
+            data: "condition",
+            type: "dropdown",
+            source: ["A=B", "A>=B", "A<=B"],
+          },
+          { data: "codeA" },
+          { data: "sheetNameA" },
+          { data: "rowA" },
+          { data: "columnA" },
+          { data: "description" },
+          { data: "codeB" },
+          { data: "sheetNameB" },
+          { data: "rowB" },
+          { data: "columnB" },
+          { data: "descriptionB" },
+        ]}
+        minSpareRows={1}
+        licenseKey="non-commercial-and-evaluation"
+      />
     </div>
   );
 };
