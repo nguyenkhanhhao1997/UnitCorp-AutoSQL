@@ -1,7 +1,14 @@
 import React, { useState } from "react";
 import { makeStyles } from "@material-ui/core";
-import { Grid, TextField, Button, Paper } from "@material-ui/core";
-import Handsontable from "handsontable";
+import {
+  Grid,
+  TextField,
+  Button,
+  Paper,
+  Box,
+  Modal,
+  Typography,
+} from "@material-ui/core";
 import { registerAllModules } from "handsontable/registry";
 import { HotTable } from "@handsontable/react";
 import "handsontable/dist/handsontable.full.min.css";
@@ -12,7 +19,7 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 1,
     marginTop: 20,
   },
-  card: {
+  table: {
     marginTop: "20px",
   },
   txtInput: {
@@ -26,38 +33,38 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+const modalStyle = {
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  width: 800,
+  bgcolor: "background.paper",
+  boxShadow: 24,
+  p: 4,
+  overflow: "scroll",
+  border: 0,
+  boxShadow: "0 3px 5px 2px grey",
+  height: 600,
+};
+
 const Home = () => {
   const classes = useStyles();
 
-  const [numberRow, setNumberRow] = useState(1);
-  const handleChangNumberOfRow = (event) => {
-    let number = event.target.value;
-    if (data.length > number) {
-      //slice list
-      let newData = data.slice(0, number);
-      setData(newData);
-    } else {
-      //append list
-      let newList = [...data];
-      for (var i = 0; i < number - data.length; i++) {
-        let newRecord = {
-          condition: "A=B",
-          codeA: "",
-          sheetNameA: "",
-          rowA: "",
-          columnA: "",
-          descriptionA: "",
-          codeB: "",
-          sheetNameB: "",
-          rowB: "",
-          columnB: "",
-          descriptionB: "",
-        };
-        newList.push(newRecord);
-      }
-      setData(newList);
-    }
-    setNumberRow(number);
+  const [scriptId, setscriptId] = useState("");
+  const [scriptName, setScriptName] = useState("");
+  const [openModal, setOpenModal] = useState(false);
+  const [scriptInsert, setScriptInsert] = useState("");
+  const [scriptDetail, setScriptDetail] = useState({});
+
+  const handleChangeId = (event) => {
+    let id = event.target.value;
+    setscriptId(id);
+  };
+
+  const handleChangeName = (event) => {
+    let name = event.target.value;
+    setScriptName(name);
   };
 
   const [data, setData] = useState([
@@ -76,20 +83,66 @@ const Home = () => {
     },
   ]);
 
+  const handleCloseModal = () => {
+    setOpenModal(false);
+  };
+
+  const handleGenerateSQLBtn = () => {
+    if (scriptId == "") {
+      alert("Please enter the script ID!");
+      return false;
+    }
+    if (scriptName == "") {
+      alert("Please enter the script Name!");
+      return false;
+    }
+    setOpenModal(true);
+  };
+
   return (
     <div className={classes.root}>
+      <Modal
+        open={openModal}
+        onClose={handleCloseModal}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={modalStyle}>
+          <Typography id="modal-modal-title" variant="h6" component="h2">
+            SQL STRING
+            <br />
+            *************
+          </Typography>
+          <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+            {JSON.stringify(data)}
+          </Typography>
+        </Box>
+      </Modal>
+
       <Grid container spacing={3}>
         <Paper className={classes.paper}>
           <Grid item xs={12} sm container>
-            <Grid item xs={6}>
+            <Grid item xs={10}>
               <TextField
                 required
-                type="number"
-                label="Row"
+                type="text"
+                label="Script ID"
                 variant="outlined"
-                value={numberRow}
+                value={scriptId}
                 className={classes.txtInput}
-                onChange={handleChangNumberOfRow}
+                onChange={handleChangeId}
+                size="small"
+              />
+            </Grid>
+            <Grid item xs={10}>
+              <TextField
+                required
+                type="text"
+                label="Script name"
+                variant="outlined"
+                value={scriptName}
+                className={classes.txtInput}
+                onChange={handleChangeName}
                 size="small"
               />
             </Grid>
@@ -98,6 +151,7 @@ const Home = () => {
                 type="button"
                 fullWidth
                 variant="contained"
+                onClick={handleGenerateSQLBtn}
                 color="secondary"
               >
                 Generate SQL
@@ -108,6 +162,7 @@ const Home = () => {
       </Grid>
 
       <HotTable
+        className={classes.table}
         data={data}
         height="auto"
         width="100%"

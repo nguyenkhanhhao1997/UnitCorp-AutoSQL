@@ -1,6 +1,6 @@
 import "./App.css";
 import React from "react";
-import { Route } from "react-router";
+import { Route, Routes } from "react-router";
 import Container from "@material-ui/core/Container";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import MenuTop from "./components/MenuTop";
@@ -12,8 +12,10 @@ const App = () => {
       <CssBaseline />
       <MenuTop />
       <Container maxWidth="md">
-        <Route exact path="/" component={Home} />
-        <Route path="/home" component={Home} />
+        <Routes>
+          <Route exact path="/" element={<Home />} />
+          <Route path="/home" element={<Home />} />
+        </Routes>
       </Container>
     </React.Fragment>
   );
