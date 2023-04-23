@@ -29,13 +29,6 @@ const MenuTop = () => {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = useState(null);
   const isMenuOpen = Boolean(anchorEl);
-  const [logout, setLogout] = useState(false);
-
-  const btnLogout = (e) => {
-    e.preventDefault();
-    sessionStorage.clear(); //clear all session
-    setLogout(true);
-  };
 
   const handleProfileMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);

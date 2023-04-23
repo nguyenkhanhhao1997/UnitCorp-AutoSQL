@@ -40,7 +40,6 @@ const modalStyle = {
   transform: "translate(-50%, -50%)",
   width: 800,
   bgcolor: "background.paper",
-  boxShadow: 24,
   p: 4,
   overflow: "scroll",
   border: 0,
@@ -141,10 +140,10 @@ const Home = () => {
     for (let i = 0; i < data.length; i++) {
       let row = i + 1;
       if (
-        data[i].descriptionA != null &&
-        data[i].descriptionA != "" &&
-        data[i].descriptionB != null &&
-        data[i].descriptionB != ""
+        data[i].descriptionA !== null &&
+        data[i].descriptionA !== "" &&
+        data[i].descriptionB !== null &&
+        data[i].descriptionB !== ""
       ) {
         let string =
           generateInsertPart(row) +
@@ -160,12 +159,12 @@ const Home = () => {
 
   const handleGenerateSQLBtn = () => {
     if (
-      scriptId == "" ||
-      scriptName == "" ||
-      reportCodeA == "" ||
-      reportCodeB == "" ||
-      sheetNameA == "" ||
-      sheetNameB == ""
+      scriptId === "" ||
+      scriptName === "" ||
+      reportCodeA === "" ||
+      reportCodeB === "" ||
+      sheetNameA === "" ||
+      sheetNameB === ""
     ) {
       alert("Please enter all information!");
       return false;
