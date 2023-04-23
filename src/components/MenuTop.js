@@ -51,7 +51,7 @@ const MenuTop = () => {
       onClose={handleMenuClose}
     >
       <MenuItem onClick={handleMenuClose}>
-        <Link to="/" className={classes.linkTo}>
+        <Link to="/home" className={classes.linkTo}>
           Home
         </Link>
       </MenuItem>
@@ -63,7 +63,7 @@ const MenuTop = () => {
       <AppBar position="static" color="primary">
         <Toolbar>
           <Typography variant="h6" className={classes.title}>
-            <Link to="/" className={classes.linkHome}>
+            <Link to="/home" className={classes.linkHome}>
               AutoSQL
             </Link>
           </Typography>
