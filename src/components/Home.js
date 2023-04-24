@@ -127,7 +127,7 @@ const Home = () => {
     return part;
   };
   const generateDescription = (record) => {
-    let part = `N''${record.descriptionA}(${record.rowA})(${record.columnA}) = ${record.descriptionB}(${record.rowB})(${record.columnB}).'' AS DESCRIPTION `;
+    let part = `N''${record.descriptionA}(${record.rowA})(${record.columnA}) = ${record.descriptionB}(${record.rowB})(${record.columnB}).'' AS DESCRIPTION) `;
     return part;
   };
   const generateSelectFinal = (record) => {
