@@ -45,6 +45,7 @@ const modalStyle = {
   border: 0,
   boxShadow: "0 3px 5px 2px grey",
   height: 600,
+  fontSize: "12px",
 };
 
 const Home = () => {
@@ -188,15 +189,13 @@ const Home = () => {
             <br />
             *************
           </Typography>
-          <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-            <p>{scriptInsert}</p>
-            <p>----{scriptId}----</p>
-            {scriptDetail.length > 0 &&
-              scriptDetail.map((record) => {
-                return <p>{record}</p>;
-              })}
-            <p>----{scriptId}----</p>
-          </Typography>
+          <p>{scriptInsert}</p>
+          <p>----{scriptId}----</p>
+          {scriptDetail.length > 0 &&
+            scriptDetail.map((record) => {
+              return <p>{record}</p>;
+            })}
+          <p>----{scriptId}----</p>
         </Box>
       </Modal>
 
