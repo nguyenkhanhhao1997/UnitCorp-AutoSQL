@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { makeStyles } from "@material-ui/core";
+import { makeStyles } from "@mui/styles";
 import {
   Grid,
   TextField,
@@ -7,8 +7,8 @@ import {
   Paper,
   Box,
   Modal,
-  Typography,
-} from "@material-ui/core";
+  Typography
+} from "@mui/material";
 import { registerAllModules } from "handsontable/registry";
 import { HotTable } from "@handsontable/react";
 import "handsontable/dist/handsontable.full.min.css";
@@ -29,8 +29,12 @@ const useStyles = makeStyles((theme) => ({
   paper: {
     padding: theme.spacing(2),
     margin: "auto",
+    marginTop: "20px",
     maxWidth: 1000,
   },
+  generateBtn: {
+    marginTop: "10px !important",
+  }
 }));
 
 const modalStyle = {
@@ -288,7 +292,7 @@ const Home = () => {
           </Grid>
           <Grid item xs={6}>
             <Button
-              type="button"
+              className={classes.generateBtn}
               fullWidth
               variant="contained"
               onClick={handleGenerateSQLBtn}

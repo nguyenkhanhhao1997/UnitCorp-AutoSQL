@@ -1,8 +1,7 @@
 import "./App.css";
 import React from "react";
 import { Route, Routes } from "react-router";
-import Container from "@material-ui/core/Container";
-import CssBaseline from "@material-ui/core/CssBaseline";
+import {Container, CssBaseline} from "@mui/material";
 import MenuTop from "./components/MenuTop";
 import Home from "./components/Home";
 
