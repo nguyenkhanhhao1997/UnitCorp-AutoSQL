@@ -5,13 +5,13 @@ import {
   TextField,
   Button,
   Paper,
-  Box,
   Modal,
-  Typography
+  Typography,
 } from "@mui/material";
 import { registerAllModules } from "handsontable/registry";
 import { HotTable } from "@handsontable/react";
 import "handsontable/dist/handsontable.full.min.css";
+import SqlModal from "./SqlModal";
 
 registerAllModules();
 const useStyles = makeStyles((theme) => ({
@@ -34,27 +34,11 @@ const useStyles = makeStyles((theme) => ({
   },
   generateBtn: {
     marginTop: "10px !important",
-  }
+  },
 }));
-
-const modalStyle = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: 800,
-  bgcolor: "background.paper",
-  p: 4,
-  overflow: "scroll",
-  border: 0,
-  boxShadow: "0 3px 5px 2px grey",
-  height: 600,
-  fontSize: "12px",
-};
 
 const Home = () => {
   const classes = useStyles();
-
   const [scriptId, setscriptId] = useState("");
   const [scriptName, setScriptName] = useState("");
   const [reportCodeA, setReportCodeA] = useState("");
@@ -93,21 +77,6 @@ const Home = () => {
   const handleChangeName = (event) => {
     let name = event.target.value;
     setScriptName(name);
-  };
-
-  const [data, setData] = useState([
-    {
-      rowA: "",
-      columnA: "",
-      descriptionA: "",
-      rowB: "",
-      columnB: "",
-      descriptionB: "",
-    },
-  ]);
-
-  const handleCloseModal = () => {
-    setOpenModal(false);
   };
 
   const generateScriptInsert = () => {
@@ -162,6 +131,24 @@ const Home = () => {
     setScriptDetail(scriptList);
   };
 
+
+  const [data, setData] = useState([
+    {
+      rowA: "",
+      columnA: "",
+      descriptionA: "",
+      rowB: "",
+      columnB: "",
+      descriptionB: "",
+    },
+  ]);
+
+  const handleCloseModal = () => {
+    setScriptInsert("");
+    setScriptDetail([])
+    setOpenModal(false);
+  };
+  
   const handleGenerateSQLBtn = () => {
     if (
       scriptId === "" ||
@@ -187,20 +174,11 @@ const Home = () => {
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
-        <Box sx={modalStyle}>
-          <Typography id="modal-modal-title" variant="h6" component="h2">
-            SQL STRING
-            <br />
-            *************
-          </Typography>
-          <p>{scriptInsert}</p>
-          <p>----{scriptId}----</p>
-          {scriptDetail.length > 0 &&
-            scriptDetail.map((record) => {
-              return <p>{record}</p>;
-            })}
-          <p>----{scriptId}----</p>
-        </Box>
+        <SqlModal
+          scriptId={scriptId}
+          scriptInsert={scriptInsert}
+          scriptDetail={scriptDetail}
+        ></SqlModal>
       </Modal>
 
       <Grid container spacing={3}>
@@ -216,6 +194,7 @@ const Home = () => {
                 variant="outlined"
                 value={scriptId}
                 className={classes.txtInput}
+                color="secondary"
                 onChange={handleChangeId}
                 size="small"
               />
@@ -228,6 +207,7 @@ const Home = () => {
                 variant="outlined"
                 value={scriptName}
                 className={classes.txtInput}
+                color="secondary"
                 onChange={handleChangeName}
                 size="small"
               />
@@ -245,6 +225,7 @@ const Home = () => {
                 variant="outlined"
                 value={reportCodeA}
                 className={classes.txtInput}
+                color="secondary"
                 onChange={handleChangeReportCodeA}
                 size="small"
               />
@@ -257,6 +238,7 @@ const Home = () => {
                 variant="outlined"
                 value={sheetNameA}
                 className={classes.txtInput}
+                color="secondary"
                 onChange={handleChangeSheetNameA}
                 size="small"
               />
@@ -273,6 +255,7 @@ const Home = () => {
                 variant="outlined"
                 value={reportCodeB}
                 className={classes.txtInput}
+                color="secondary"
                 onChange={handleChangeReportCodeB}
                 size="small"
               />
@@ -285,6 +268,7 @@ const Home = () => {
                 variant="outlined"
                 value={sheetNameB}
                 className={classes.txtInput}
+                color="secondary"
                 onChange={handleChangeSheetNameB}
                 size="small"
               />
@@ -296,7 +280,7 @@ const Home = () => {
               fullWidth
               variant="contained"
               onClick={handleGenerateSQLBtn}
-              color="secondary"
+              color="error"
             >
               Generate SQL
             </Button>
