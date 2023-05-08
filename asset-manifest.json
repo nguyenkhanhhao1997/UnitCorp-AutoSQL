@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/UnitCorp-AutoSQL/static/css/main.6655a577.css",
-    "main.js": "/UnitCorp-AutoSQL/static/js/main.96170881.js",
+    "main.js": "/UnitCorp-AutoSQL/static/js/main.a877d220.js",
     "static/js/496.5f28fc6e.chunk.js": "/UnitCorp-AutoSQL/static/js/496.5f28fc6e.chunk.js",
     "index.html": "/UnitCorp-AutoSQL/index.html",
     "main.6655a577.css.map": "/UnitCorp-AutoSQL/static/css/main.6655a577.css.map",
-    "main.96170881.js.map": "/UnitCorp-AutoSQL/static/js/main.96170881.js.map",
+    "main.a877d220.js.map": "/UnitCorp-AutoSQL/static/js/main.a877d220.js.map",
     "496.5f28fc6e.chunk.js.map": "/UnitCorp-AutoSQL/static/js/496.5f28fc6e.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.6655a577.css",
-    "static/js/main.96170881.js"
+    "static/js/main.a877d220.js"
   ]
 }
