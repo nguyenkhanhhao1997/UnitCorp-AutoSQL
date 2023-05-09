@@ -12,6 +12,7 @@ import { registerAllModules } from "handsontable/registry";
 import { HotTable } from "@handsontable/react";
 import "handsontable/dist/handsontable.full.min.css";
 import SqlModal from "./SqlModal";
+import GenerateScriptDetail from "../functions/GenerateScriptDetail";
 
 registerAllModules();
 const useStyles = makeStyles((theme) => ({
@@ -47,8 +48,28 @@ const Home = () => {
   const [sheetNameB, setSheetNameB] = useState("");
   const [openModal, setOpenModal] = useState(false);
   const [scriptInsert, setScriptInsert] = useState("");
-  const [scriptDetail, setScriptDetail] = useState([]);
+  const [data, setData] = useState([
+    {
+      rowA: "",
+      columnA: "",
+      descriptionA: "",
+      condition: "",
+      rowB: "",
+      columnB: "",
+      descriptionB: "",
+    },
+  ]);
 
+  const { scriptDetail, generateScriptDetail } = GenerateScriptDetail(
+    scriptId,
+    reportCodeA,
+    sheetNameA,
+    reportCodeB,
+    sheetNameB,
+    data
+  );
+
+  // Handle event
   const handleChangeReportCodeA = (event) => {
     let text = event.target.value;
     setReportCodeA(text);
@@ -79,76 +100,11 @@ const Home = () => {
     setScriptName(name);
   };
 
-  const generateScriptInsert = () => {
-    let string = `insert into s_script_sql (SCRIPT_SQL_ID, SCRIPT_SQL_NAME, SCRIPT_TYPE)\n\
-                  values ('${scriptId}', '${scriptName}', 2);`;
-    setScriptInsert(string);
-  };
-
-  const generateInsertPart = (row) => {
-    let part = `insert into s_script_sql_detail (SCRIPT_SQL_ID, ORDERBY, SCRIPT_SQL_CONTENT, ISSTOREPROCEDURE)\n\
-                values ('${scriptId}',${row}, N'WITH TB_RS AS `;
-    return part;
-  };
-  const generateSelectA = (record) => {
-    let part = `(SELECT(\n\
-                SELECT ISNull((Select  ROUND(try_Convert(DECIMAL(18,3),REPLACE(COALESCE(${record.columnA},''0''),'','',''.'')),2) FROM RP_MASTER_DATA WHERE RP_CODE =''${reportCodeA}'' AND SheetName = ''${sheetNameA}'' AND R_RP_CODE =''${record.rowA}'' AND CAST(DATERP AS DATE) = ''{DATERP}''  AND BRANCHID =''{Branch}''),0)) AS "${reportCodeA}", \n\
-                `;
-    return part;
-  };
-  const generateSelectB = (record) => {
-    let part = `(SELECT ISNull((Select ROUND(try_Convert(DECIMAL(18,3),REPLACE(COALESCE(${record.columnB},''0''),'','',''.'')),2) FROM RP_MASTER_DATA WHERE RP_CODE =''${reportCodeB}'' AND SheetName = ''${sheetNameB}'' AND R_RP_CODE =''${record.rowB}'' AND CAST(DATERP AS DATE) = ''{DATERP}''  AND BRANCHID =''{Branch}''),0)) AS "${reportCodeB}", `;
-    return part;
-  };
-  const generateDescription = (record) => {
-    let part = `N''${record.descriptionA}(${record.rowA})(${record.columnA}) = ${record.descriptionB}(${record.rowB})(${record.columnB}).'' AS DESCRIPTION) `;
-    return part;
-  };
-  const generateSelectFinal = (record) => {
-    let part = `SELECT DESCRIPTION,"${reportCodeA}","${reportCodeB}",(CASE WHEN ABS( (COALESCE("${reportCodeA}",0)) - (COALESCE("${reportCodeB}",0))) > 0  THEN ''1'' ELSE ''0'' END) as RESULT  FROM  TB_RS', 0);`;
-    return part;
-  };
-
-  const generateScriptDetail = () => {
-    let scriptList = [...scriptDetail];
-    for (let i = 0; i < data.length; i++) {
-      let row = i + 1;
-      if (
-        data[i].descriptionA !== null &&
-        data[i].descriptionA !== "" &&
-        data[i].descriptionB !== null &&
-        data[i].descriptionB !== ""
-      ) {
-        let string =
-          generateInsertPart(row) +
-          generateSelectA(data[i]) +
-          generateSelectB(data[i]) +
-          generateDescription(data[i]) +
-          generateSelectFinal(data[i]);
-        scriptList.push(string);
-      }
-    }
-    setScriptDetail(scriptList);
-  };
-
-
-  const [data, setData] = useState([
-    {
-      rowA: "",
-      columnA: "",
-      descriptionA: "",
-      rowB: "",
-      columnB: "",
-      descriptionB: "",
-    },
-  ]);
-
   const handleCloseModal = () => {
     setScriptInsert("");
-    setScriptDetail([])
     setOpenModal(false);
   };
-  
+
   const handleGenerateSQLBtn = () => {
     if (
       scriptId === "" ||
@@ -166,6 +122,14 @@ const Home = () => {
     setOpenModal(true);
   };
 
+  // Generate SQL
+  const generateScriptInsert = () => {
+    let string = `insert into s_script_sql (SCRIPT_SQL_ID, SCRIPT_SQL_NAME, SCRIPT_TYPE)\n\
+                  values ('${scriptId}', '${scriptName}', 2);`;
+    setScriptInsert(string);
+  };
+
+  // View
   return (
     <div className={classes.root}>
       <Modal
@@ -280,7 +244,7 @@ const Home = () => {
               fullWidth
               variant="contained"
               onClick={handleGenerateSQLBtn}
-              color="error"
+              color="primary"
             >
               Generate SQL
             </Button>
@@ -293,12 +257,13 @@ const Home = () => {
         data={data}
         height="auto"
         width="100%"
-        colWidths={150}
+        colWidths={[125, 125, 400, 125, 125, 125, 400]}
         stretchH="last"
         colHeaders={[
           "(A)Row",
           "(A)Col",
           "(A)Description",
+          "Condition",
           "(B)Row",
           "(B)Col",
           "(B)Description",
@@ -307,6 +272,11 @@ const Home = () => {
           { data: "rowA" },
           { data: "columnA" },
           { data: "descriptionA" },
+          {
+            data: "condition",
+            editor: "select",
+            selectOptions: ["=", ">", "<"],
+          },
           { data: "rowB" },
           { data: "columnB" },
           { data: "descriptionB" },

@@ -1,7 +1,7 @@
 import "./App.css";
 import React from "react";
 import { Route, Routes } from "react-router";
-import {Container, CssBaseline} from "@mui/material";
+import { Container, CssBaseline } from "@mui/material";
 import MenuTop from "./components/MenuTop";
 import Home from "./components/Home";
 
@@ -10,7 +10,7 @@ const App = () => {
     <React.Fragment>
       <CssBaseline />
       <MenuTop />
-      <Container maxWidth="md">
+      <Container maxWidth="xl">
         <Routes>
           <Route exact path="/" element={<Home />} />
           <Route path="/home" element={<Home />} />
